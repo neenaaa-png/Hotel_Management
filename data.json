@@ -1,0 +1,28 @@
+{
+  "rooms": [
+    {
+      "id": "379cc31e-8f72-4716-944f-dd31dfdbd1c7",
+      "name": "Room 101",
+      "type": "Single",
+      "price": 5000,
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSA9LO76cIwZahsQW-_kUT1X--_KBmVTNPVM4ZF5nylxw&s=10"
+    }
+  ],
+  "guests": [
+    {
+      "id": "6632a62f-0adb-4c20-bcb0-71c73113a4be",
+      "name": "Annie Neena",
+      "email": "annieneena03@gmail.com",
+      "phone": "09164721482"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "041e4a0c-a0af-4740-a488-fb873c27faa1",
+      "guest": "nina",
+      "roomId": "demo-1",
+      "checkin": "2026-08-19",
+      "checkout": "2026-08-21"
+    }
+  ]
+}

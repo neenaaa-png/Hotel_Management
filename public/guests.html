@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Sunrise Hotel - Guests</title>
+
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Navigation -->
+    <nav class="topnav">
+
+      <div class="nav-inner">
+
+        <div class="nav-left">
+        </div>
+
+        <ul class="nav-centre">
+
+          <li>
+            <a href="/">Home</a>
+          </li>
+
+          <li>
+            <a href="/rooms.html">Rooms</a>
+          </li>
+
+          <li>
+            <a href="/create.html">Create Room</a>
+          </li>
+
+          <li>
+            <a href="/guests.html">Guests</a>
+          </li>
+
+          <li>
+            <a href="/bookings.html">Bookings</a>
+          </li>
+
+        </ul>
+
+        <div class="nav-right">
+          <a
+            href="/rooms.html"
+            class="btn-link"
+          >
+            View Rooms
+          </a>
+        </div>
+
+      </div>
+
+    </nav>
+
+
+    <main>
+
+      <!-- Add Guest -->
+      <section class="card">
+
+        <p class="eyebrow">
+          SUNRISE HOTEL
+        </p>
+
+        <h1>
+          Guests
+        </h1>
+
+        <p class="lead">
+          Add and manage hotel guests.
+        </p>
+
+
+        <h2>
+          Add Guest
+        </h2>
+
+
+        <form id="gform">
+
+          <label>
+            Name
+
+            <input
+              name="name"
+              required
+              placeholder="e.g., Annie Neena"
+            >
+          </label>
+
+
+          <label>
+            Email
+
+            <input
+              name="email"
+              type="email"
+              placeholder="e.g., annie@example.com"
+            >
+          </label>
+
+
+          <label>
+            Phone
+
+            <input
+              name="phone"
+              placeholder="e.g., 9876543210"
+            >
+          </label>
+
+
+          <div class="form-actions">
+
+            <button
+              type="submit"
+              class="btn-primary"
+            >
+              Create Guest
+            </button>
+
+          </div>
+
+        </form>
+
+
+        <div
+          id="gmsg"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+      </section>
+
+
+      <!-- Guest List -->
+      <section
+        class="card"
+        style="margin-top:20px"
+      >
+
+        <p class="eyebrow">
+          GUEST MANAGEMENT
+        </p>
+
+        <h2>
+          Guest List
+        </h2>
+
+
+        <div
+          class="table-responsive"
+          id="guestList"
+        >
+          Loading...
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <footer class="card">
+
+      Sunrise Hotel • Guest Management • AWS EC2 + DynamoDB
+
+    </footer>
+
+  </div>
+
+
+  <script>
+
+    async function loadGuests() {
+
+      const el =
+        document.getElementById('guestList');
+
+
+      try {
+
+        const res =
+          await fetch('/api/guests');
+
+
+        if (!res.ok) {
+          throw new Error('Guests API failed');
+        }
+
+
+        const items =
+          await res.json();
+
+
+        if (!items || items.length === 0) {
+
+          el.innerHTML =
+            '<div class="empty-state">No guests yet.</div>';
+
+          return;
+
+        }
+
+
+        el.innerHTML = `
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              ${items.map(g => `
+
+                <tr>
+
+                  <td>
+                    <strong>
+                      ${g.name || ''}
+                    </strong>
+                  </td>
+
+                  <td>
+                    ${g.email || '—'}
+                  </td>
+
+                  <td>
+                    ${g.phone || '—'}
+                  </td>
+
+                  <td>
+
+                    <button
+                      type="button"
+                      onclick="editGuest('${g.id}')"
+                      class="action-edit"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      onclick="deleteGuest('${g.id}')"
+                      class="action-delete"
+                    >
+                      Delete
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              `).join('')}
+
+            </tbody>
+
+          </table>
+
+        `;
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        el.innerHTML = `
+          <div class="empty-state">
+            Unable to load guests.
+            <br>
+            Make sure the /api/guests API exists.
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    document
+      .getElementById('gform')
+      .addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+
+        const form = e.target;
+
+
+        if (!form.reportValidity()) {
+          return;
+        }
+
+
+        const body =
+          Object.fromEntries(
+            new FormData(form).entries()
+          );
+
+
+        try {
+
+          const res =
+            await fetch(
+              '/api/guests',
+              {
+                method: 'POST',
+
+                headers: {
+                  'Content-Type':
+                    'application/json'
+                },
+
+                body:
+                  JSON.stringify(body)
+              }
+            );
+
+
+          if (res.ok) {
+
+            document.getElementById(
+              'gmsg'
+            ).innerText =
+              'Guest created successfully!';
+
+
+            form.reset();
+
+            loadGuests();
+
+
+          } else {
+
+            document.getElementById(
+              'gmsg'
+            ).innerText =
+              'Error creating guest';
+
+          }
+
+
+        } catch (error) {
+
+          console.error(error);
+
+          document.getElementById(
+            'gmsg'
+          ).innerText =
+            'Unable to connect to server';
+
+        }
+
+      });
+
+
+    async function deleteGuest(id) {
+
+      if (
+        !confirm(
+          'Are you sure you want to delete this guest?'
+        )
+      ) {
+        return;
+      }
+
+
+      try {
+
+        const res =
+          await fetch(
+            '/api/guests/' + id,
+            {
+              method: 'DELETE'
+            }
+          );
+
+
+        if (!res.ok) {
+          throw new Error('Delete failed');
+        }
+
+
+        loadGuests();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          'Unable to delete guest'
+        );
+
+      }
+
+    }
+
+
+    async function editGuest(id) {
+
+      const name =
+        prompt(
+          'Enter new guest name:'
+        );
+
+
+      if (!name) {
+        return;
+      }
+
+
+      try {
+
+        const res =
+          await fetch(
+            '/api/guests/' + id,
+            {
+              method: 'PUT',
+
+              headers: {
+                'Content-Type':
+                  'application/json'
+              },
+
+              body:
+                JSON.stringify({
+                  name: name
+                })
+            }
+          );
+
+
+        if (!res.ok) {
+          throw new Error('Update failed');
+        }
+
+
+        loadGuests();
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert(
+          'Unable to update guest'
+        );
+
+      }
+
+    }
+
+
+    loadGuests();
+
+  </script>
+
+</body>
+
+</html>

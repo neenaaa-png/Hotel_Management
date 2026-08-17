@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260" viewBox="0 0 400 260">
+  <rect width="100%" height="100%" fill="#fff8e1"/>
+  <rect x="16" y="16" width="368" height="180" rx="10" fill="#ffd54f"/>
+  <text x="28" y="220" font-family="Arial" font-size="20" fill="#5d3b00">Cozy Single Room</text>
+</svg>

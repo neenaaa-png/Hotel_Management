@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="description"
+    content="Sunrise Hotel - Create a new room"
+  >
+
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+
+<body>
+
+  <div class="container">
+
+    <!-- Navigation -->
+    <nav class="topnav">
+
+      <div class="nav-inner">
+
+        <div class="nav-left">
+          
+        </div>
+
+        <ul class="nav-centre">
+
+          <li>
+            <a href="/">Home</a>
+          </li>
+
+          <li>
+            <a href="/rooms.html">Rooms</a>
+          </li>
+
+          <li>
+            <a href="/create.html">Create Room</a>
+          </li>
+          
+          <li>
+            <a href="/guests.html">Guests</a>
+        </li>
+        
+          <li>
+            <a href="/bookings.html">Bookings</a>
+          </li>
+
+        </ul>
+
+        <div class="nav-right">
+          <a
+            href="/rooms.html"
+            class="btn-link"
+          >
+            View Rooms
+          </a>
+        </div>
+
+      </div>
+
+    </nav>
+
+
+    <!-- Main -->
+    <main>
+
+      <section class="card create-room-card">
+
+        <div class="page-header">
+
+          <div>
+
+            <p class="eyebrow">
+              SUNRISE HOTEL
+            </p>
+
+            <h1>
+              Create Room
+            </h1>
+
+            <p class="lead">
+              Add a new room to your hotel.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- Form -->
+        <form id="f" novalidate>
+
+          <label>
+            Name
+
+            <input
+              name="name"
+              required
+              placeholder="e.g., Room 101"
+            >
+
+          </label>
+
+
+          <label>
+            Type
+
+            <input
+              name="type"
+              required
+              placeholder="e.g., Single / Double / Suite"
+            >
+
+          </label>
+
+
+          <label>
+            Price
+
+            <input
+              name="price"
+              type="number"
+              min="0"
+              required
+              placeholder="e.g., 50"
+            >
+
+          </label>
+
+
+          <label>
+            Image URL
+            <span class="optional">
+              (optional)
+            </span>
+
+            <input
+              name="image"
+              placeholder="/assets/room1.svg or https://..."
+            >
+
+          </label>
+
+
+          <div class="form-actions">
+
+            <button
+              type="submit"
+              class="btn-primary"
+            >
+              Create Room
+            </button>
+
+            <a
+              href="/rooms.html"
+              class="btn-secondary"
+            >
+              Cancel
+            </a>
+
+          </div>
+
+        </form>
+
+
+        <div
+          id="msg"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+      </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="card">
+
+      Sunrise Hotel • Room Management • AWS EC2 + DynamoDB
+
+    </footer>
+
+  </div>
+
+
+  <script>
+
+    const toast = (msg) => {
+
+      let t = document.querySelector('.toast');
+
+      if (!t) {
+
+        t = document.createElement('div');
+
+        t.className = 'toast';
+
+        document.body.appendChild(t);
+
+      }
+
+      t.textContent = msg;
+
+      t.classList.add('show');
+
+      setTimeout(() => {
+
+        t.classList.remove('show');
+
+      }, 2400);
+
+    };
+
+
+    document
+      .getElementById('f')
+      .addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+        const form = e.target;
+
+
+        if (!form.reportValidity()) {
+          return;
+        }
+
+
+        const fd = new FormData(form);
+
+        const body =
+          Object.fromEntries(fd.entries());
+
+
+        try {
+
+          const res = await fetch(
+            '/api/rooms',
+            {
+              method: 'POST',
+
+              headers: {
+                'content-type':
+                  'application/json'
+              },
+
+              body: JSON.stringify(body)
+            }
+          );
+
+
+          if (res.ok) {
+
+            toast('Room created successfully!');
+
+            form.reset();
+
+          } else {
+
+            toast('Error creating room');
+
+          }
+
+        } catch (error) {
+
+          console.error(error);
+
+          toast(
+            'Unable to connect to the server'
+          );
+
+        }
+
+      });
+
+  </script>
+
+</body>
+
+</html>

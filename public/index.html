@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Simple hotel management app — rooms CRUD, deploy to EC2 and DynamoDB">
+  <title>Sunrise Hotel - Admin</title>
+  <link rel="icon" href="/https://www.magnific.com/photos/building" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="topnav">
+      <div class="nav-inner">
+        <ul class="nav-centre">
+          <li><a href="/">Home</a></li>
+          <li><a href="/rooms.html">Rooms</a></li>
+          <li><a href="/create.html">Create Room</a></li>
+          <li><a href="/guests.html">Guests</a></li>
+          <li><a href="/bookings.html">Bookings</a></li>
+        </ul>
+        <div class="nav-right"><a href="/rooms.html" class="btn-link">View Rooms</a></div>
+      </div>
+    </nav>
+
+    <main>
+      <section class="hero-landing">
+        <div class="hero-card">
+          <div class="hero-left">
+            <p class="eyebrow">FRESH PICKS, FAST CHECKOUT</p>
+            <h1>Mini Hotel Admin Dashboard</h1>
+            <p class="lead">Manage rooms and bookings with a simple interface — deploy to AWS EC2 and store data in DynamoDB.</p>
+            <div class="hero-ctas">
+              <a href="/rooms.html" class="btn-primary">View Rooms</a>
+              <a href="/bookings.html" class="btn-secondary">Place Booking</a>
+            </div>
+          </div>
+          <div class="hero-right">
+            <img src="image.jpg" alt="hotel" class="hero-image">
+          </div>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="feature"><h3>Rooms CRUD</h3><p>Create, view, edit and delete rooms.</p></div>
+        <div class="feature"><h3>Deploy to EC2</h3><p>Run Node.js server on EC2 with IAM role for DynamoDB.</p></div>
+        <div class="feature"><h3>Persistent DB</h3><p>Data stored in Amazon DynamoDB table `Hotels`.</p></div>
+      </section>
+    </main>
+
+    <footer class="card">Built for lab: deploy on EC2 + DynamoDB • Capture screenshots in /screenshots</footer>
+  </div>
+</body>
+</html>

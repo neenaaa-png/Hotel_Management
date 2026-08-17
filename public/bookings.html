@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta
+    name="description"
+    content="Sunrise Hotel - Manage bookings"
+  >
+
+  <title>Sunrise Hotel - Bookings</title>
+
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+
+<body>
+
+  <div class="container">
+
+    <!-- Navigation -->
+    <nav class="topnav">
+
+      <div class="nav-inner">
+
+        <div class="nav-left">
+          
+        </div>
+
+        <ul class="nav-centre">
+
+          <li>
+            <a href="/">Home</a>
+          </li>
+
+          <li>
+            <a href="/rooms.html">Rooms</a>
+          </li>
+
+          <li>
+            <a href="/create.html">Create Room</a>
+          </li>
+
+          <li>
+            <a href="/guests.html">Guests</a>
+        </li>
+        
+          <li>
+            <a href="/bookings.html">Bookings</a>
+          </li>
+
+        </ul>
+
+        <div class="nav-right">
+          <a
+            href="/rooms.html"
+            class="btn-link"
+          >
+            View Rooms
+          </a>
+        </div>
+
+      </div>
+
+    </nav>
+
+
+    <!-- Main Content -->
+    <main>
+
+      <!-- Create Booking -->
+      <section class="card">
+
+        <div class="page-header">
+
+          <div>
+
+            <p class="eyebrow">
+              SUNRISE HOTEL
+            </p>
+
+            <h1>
+              Bookings
+            </h1>
+
+            <p class="lead">
+              Create and manage guest room bookings.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <h2>Create Booking</h2>
+
+
+        <form id="bookingForm">
+
+          <label>
+            Guest Name
+
+            <input
+              name="guest"
+              required
+              placeholder="e.g., Annie Neena"
+            >
+
+          </label>
+
+
+          <label>
+            Room ID
+
+            <input
+              name="roomId"
+              required
+              placeholder="e.g., demo-1 or created room ID"
+            >
+
+          </label>
+
+
+          <label>
+            Check-in
+
+            <input
+              name="checkin"
+              type="date"
+              required
+            >
+
+          </label>
+
+
+          <label>
+            Check-out
+
+            <input
+              name="checkout"
+              type="date"
+              required
+            >
+
+          </label>
+
+
+          <div class="form-actions">
+
+            <button
+              type="submit"
+              class="btn-primary"
+            >
+              Create Booking
+            </button>
+
+            <a
+              href="/rooms.html"
+              class="btn-secondary"
+            >
+              View Rooms
+            </a>
+
+          </div>
+
+        </form>
+
+
+        <div
+          id="bookingMsg"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+      </section>
+
+
+      <!-- Existing Bookings -->
+      <section class="card bookings-card">
+
+        <div class="section-heading">
+
+          <div>
+            <p class="eyebrow">
+              RESERVATIONS
+            </p>
+
+            <h2>
+              Existing Bookings
+            </h2>
+          </div>
+
+        </div>
+
+
+        <div id="bookingsList">
+          Loading...
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="card">
+
+      Sunrise Hotel • Room Management • AWS EC2 + DynamoDB
+
+    </footer>
+
+  </div>
+
+
+  <script>
+
+    async function loadBookings() {
+
+      const el =
+        document.getElementById('bookingsList');
+
+
+      try {
+
+        const res =
+          await fetch('/api/bookings');
+
+
+        if (!res.ok) {
+          throw new Error('Failed to load bookings');
+        }
+
+
+        const items =
+          await res.json();
+
+
+        if (!items || items.length === 0) {
+
+          el.innerHTML =
+            '<div class="empty-state">No bookings yet.</div>';
+
+          return;
+
+        }
+
+
+        el.innerHTML = `
+
+          <div class="bookings-list">
+
+            ${items.map(b => `
+
+              <div class="booking-item">
+
+                <div class="booking-main">
+
+                  <strong>
+                    ${b.guest || 'Guest'}
+                  </strong>
+
+                  <span>
+                    Room: ${b.roomId || '—'}
+                  </span>
+
+                </div>
+
+
+                <div class="booking-dates">
+
+                  <span>
+                    ${b.checkin || '—'}
+                  </span>
+
+                  <span class="arrow">
+                    →
+                  </span>
+
+                  <span>
+                    ${b.checkout || '—'}
+                  </span>
+
+                </div>
+
+              </div>
+
+            `).join('')}
+
+          </div>
+
+        `;
+
+
+      } catch (e) {
+
+        console.error(e);
+
+        el.innerHTML =
+          '<div class="empty-state">Error loading bookings.</div>';
+
+      }
+
+    }
+
+
+    document
+      .getElementById('bookingForm')
+      .addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+
+        const form = e.target;
+
+
+        if (!form.reportValidity()) {
+          return;
+        }
+
+
+        const body =
+          Object.fromEntries(
+            new FormData(form).entries()
+          );
+
+
+        const msg =
+          document.getElementById('bookingMsg');
+
+
+        try {
+
+          const res =
+            await fetch(
+              '/api/bookings',
+              {
+                method: 'POST',
+
+                headers: {
+                  'content-type':
+                    'application/json'
+                },
+
+                body: JSON.stringify(body)
+              }
+            );
+
+
+          if (res.ok) {
+
+            msg.innerText =
+              'Booking created successfully!';
+
+            msg.className =
+              'success-message';
+
+            form.reset();
+
+            loadBookings();
+
+          } else {
+
+            msg.innerText =
+              'Error creating booking.';
+
+            msg.className =
+              'error-message';
+
+          }
+
+
+        } catch (error) {
+
+          console.error(error);
+
+          msg.innerText =
+            'Unable to connect to the server.';
+
+          msg.className =
+            'error-message';
+
+        }
+
+      });
+
+
+    loadBookings();
+
+  </script>
+
+</body>
+
+</html>

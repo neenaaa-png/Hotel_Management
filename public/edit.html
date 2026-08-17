@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Edit Room</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <nav class="topnav">
+    <div class="nav-inner">
+      
+      <ul class="nav-centre">
+        <li><a href="/">Home</a></li>
+        <li><a href="/rooms.html">Rooms</a></li>
+        <li><a href="/create.html">Create Room</a></li>
+        <li><a href="/bookings.html">Bookings</a></li>
+      </ul>
+      <div class="nav-right"></div>
+    </div>
+  </nav>
+  <main>
+    <div class="container">
+      <section class="card">
+        <h1>Edit Room</h1>
+        <form id="f">
+          <input type="hidden" name="id">
+          <label>Name: <input name="name"></label>
+          <label>Type: <input name="type"></label>
+          <label>Price: <input name="price" type="number"></label>
+          <button>Save</button>
+        </form>
+        <div id="msg"></div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    if(id) fetch('/api/rooms/'+id).then(r=>r.json()).then(data=>{
+      const f=document.getElementById('f');
+      f.id.value=data.id; f.name.value=data.name||''; f.type.value=data.type||''; f.price.value=data.price||'';
+    });
+    // populate image if present
+    if(id) fetch('/api/rooms/'+id).then(r=>r.json()).then(data=>{
+      const f=document.getElementById('f');
+      if(data.image) { let imgInput = f.querySelector('input[name=image]'); if(!imgInput){ imgInput = document.createElement('input'); imgInput.name='image'; imgInput.placeholder='Image URL'; imgInput.style.width='100%'; const lbl = document.createElement('label'); lbl.textContent='Image URL:'; lbl.appendChild(imgInput); f.insertBefore(lbl, f.querySelector('button')) } imgInput.value=data.image}
+    }).catch(()=>{});
+    document.getElementById('f').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const body = Object.fromEntries(fd.entries());
+      const res = await fetch('/api/rooms/'+body.id,{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+      if(res.ok) document.getElementById('msg').innerText='Saved';
+    });
+  </script>
+</body>
+</html>
